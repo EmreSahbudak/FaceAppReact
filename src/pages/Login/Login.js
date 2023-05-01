@@ -12,14 +12,34 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
 export default function SignInSide() {
+    const navigate=useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    fetch('http://localhost:9090/api/v1/auth/login',
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify({
+            email : data.get('email'),
+            password : data.get('password'),
+        })
+    }).then((data)=> data.json())
+    .then((data)=>{
+        if(data.statusCode === 2001){
+            localStorage.setItem('token',data.message)
+            navigate.call(null,'/')
+        }
+        console.log(data)
+    })
     console.log({
       email: data.get('email'),
       password: data.get('password'),

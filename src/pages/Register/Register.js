@@ -12,18 +12,40 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 
 
 const theme = createTheme();
 
 export default function SignInSide() {
+    const navigate=useNavigate();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    fetch('http://localhost:9090/api/v1/auth/register',
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify({
+            email : data.get('email'),
+            password : data.get('password'),
+            repassword : data.get('repassword'),
+            username : data.get('username'),
+        })
+    }).then(()=>{
+        console.log({
+            veri: "Succes!!!",
+            email: data.get('email'),
+            password: data.get('password'),
+            repassword: data.get('repassword'),
+            username: data.get('username'),
+        })
+    }).then(()=>{
+        navigate.call(null,"/login")
+    })
   };
 
   return (
@@ -62,25 +84,15 @@ export default function SignInSide() {
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="username"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id="username"
+                  label="User Name"
                   autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -105,11 +117,17 @@ export default function SignInSide() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                <TextField
+                  required
+                  fullWidth
+                  name="repassword"
+                  label="RePassword"
+                  type="password"
+                  id="repassword"
+                  autoComplete="new-password"
                 />
               </Grid>
+              
             </Grid>
             <Button
               type="submit"
